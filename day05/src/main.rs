@@ -24,13 +24,13 @@ struct Manifest {
 }
 
 fn parse_input(input: &str) -> Manifest {
-    let (header, moves) = input.split_once("\n\n").unwrap();
+    let (header, moves) = input.trim().split_once("\n\n").unwrap();
     let nstacks = header
         .split("\n")
         .last()
         .unwrap()
-        .chars()
-        .filter(|c| c.is_ascii_digit())
+        .trim()
+        .split("  ")
         .count();
 
     let mut stacks = vec![VecDeque::new(); nstacks];
@@ -46,7 +46,6 @@ fn parse_input(input: &str) -> Manifest {
     }
 
     let moves = moves
-        .trim()
         .split("\n")
         .map(|line| {
             let vals = line.split(" ").skip(1).step_by(2).collect::<Vec<_>>();
@@ -67,9 +66,10 @@ fn part_one(input: &str) -> String {
 
     for mov in manifest.moves {
         for _ in 0..mov.quantity {
-            let val = manifest.stacks[mov.from - 1]
-                .pop_front()
-                .expect(&format!("we tried to pop from {} but it was empty", mov.from));
+            let val = manifest.stacks[mov.from - 1].pop_front().expect(&format!(
+                "we tried to pop from {} but it was empty",
+                mov.from
+            ));
 
             manifest.stacks[mov.to - 1].push_front(val);
         }
@@ -89,9 +89,10 @@ fn part_two(input: &str) -> String {
         let mut temp_stack = VecDeque::with_capacity(mov.quantity);
 
         for _ in 0..mov.quantity {
-            let val = manifest.stacks[mov.from - 1]
-                .pop_front()
-                .expect(&format!("we tried to pop from {} but it was empty", mov.from));
+            let val = manifest.stacks[mov.from - 1].pop_front().expect(&format!(
+                "we tried to pop from {} but it was empty",
+                mov.from
+            ));
 
             temp_stack.push_front(val);
         }
